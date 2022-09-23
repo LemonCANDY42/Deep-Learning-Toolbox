@@ -7,6 +7,7 @@
 
 import albumentations as A
 from albumentations.augmentations.functional import adjust_hue_torchvision
+from albumentations.augmentations.geometric.rotate import Rotate
 from PIL import Image
 import numpy as np
 import os
@@ -28,6 +29,7 @@ def unit_augmentation_factor(path,factor):
 def unit_augmentation(path):
     transform = A.Compose([
         A.ColorJitter(brightness=0.2, contrast=0.15, saturation=0.2, hue=0.05, always_apply=False, p=0.8),
+        Rotate(180, always_apply=True,p=1)
     ])
 
     pillow_image = Image.open(path)
