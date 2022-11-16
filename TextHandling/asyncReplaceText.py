@@ -32,9 +32,9 @@ async def load_files(filepaths,need_replace_text,replace_text):
 
 
 # load all files in a directory into memory
-async def main(path='./',need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmail.com"):
+async def main(path='./',need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmail.com",suffix='txt'):
 	# prepare all of the paths
-	paths = get_suffix_files(path)
+	paths = get_suffix_files(path,suffix=suffix)
 	# split up the data
 	chunksize = 10
 	# split the operations into chunks
@@ -57,4 +57,4 @@ async def main(path='./',need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmai
 
 # entry point
 if __name__ == '__main__':
-	asyncio.run(main("/Users/kennymccormick/WorkFolder/test_path",need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmail.com"))
+	asyncio.run(main("/Users/kennymccormick/WorkFolder/test_path",need_replace_text='Kenny Zhou',replace_text="l.w.r.f.42@gmail.com",suffix='txt'))
