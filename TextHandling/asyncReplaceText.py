@@ -4,13 +4,14 @@
 # @FileName: asyncReplaceText.py
 # @Software: PyCharm
 # @Email    ：l.w.r.f.42@gmail.com
+
+# Notice:This script will modify the file on the source file, please pay attention to the backup to avoid unnecessary damage!
 # Need todo: pip install aiofiles
 # load many files concurrently with asyncio in batch
-from os import listdir
-from os.path import join
+# from os import listdir
+# from os.path import join
 import asyncio
-import aiofiles
-
+# import aiofiles
 from PathTools import get_suffix_files
 
 # load and return the contents of a list of file paths
