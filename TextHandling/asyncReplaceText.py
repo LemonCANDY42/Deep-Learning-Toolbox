@@ -14,7 +14,7 @@ import aiofiles
 from PathTools import get_suffix_files
 
 # load and return the contents of a list of file paths
-async def load_files(filepaths):
+async def load_files(filepaths,need_replace_text,replace_text):
 	# load all files
 	for filepath in filepaths:
 		# open the file
@@ -25,13 +25,13 @@ async def load_files(filepaths):
 	# 		data_list.append(data)
 	# return (data_list, filepaths)
 		text = filepath.read_text()
-		text = text.replace("wsdfgefrgh", "12312423423")
+		text = text.replace(need_replace_text, replace_text)
 		filepath.write_text(text)
 	return filepaths
 
 
 # load all files in a directory into memory
-async def main(path='./'):
+async def main(path='./',need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmail.com"):
 	# prepare all of the paths
 	paths = get_suffix_files(path)
 	# split up the data
@@ -42,7 +42,7 @@ async def main(path='./'):
 		# select a chunk of filenames
 		filepaths = paths[i:(i + chunksize)]
 		# define the task
-		tasks.append(load_files(filepaths))
+		tasks.append(load_files(filepaths,need_replace_text,replace_text))
 	# execute tasks and process results as they are completed
 	for task in asyncio.as_completed(tasks):
 		# wait for the next task to complete
@@ -56,4 +56,4 @@ async def main(path='./'):
 
 # entry point
 if __name__ == '__main__':
-	asyncio.run(main("/Users/kennymccormick/WorkFolder/test_path"))
+	asyncio.run(main("/Users/kennymccormick/WorkFolder/test_path",need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmail.com"))
