@@ -7,7 +7,6 @@
 
 import pathlib
 
-
 def get_suffix_files(path:str|pathlib.Path,suffix='txt'):
 	"""
 	Iterate through all the files with the specified suffix in the specified folder。

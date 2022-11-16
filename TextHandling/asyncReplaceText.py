@@ -16,15 +16,18 @@ from PathTools import get_suffix_files
 # load and return the contents of a list of file paths
 async def load_files(filepaths):
 	# load all files
-	data_list = list()
 	for filepath in filepaths:
 		# open the file
-		async with aiofiles.open(filepath, 'r') as handle:
-			# load the contents and add to list
-			data = await handle.read()
-			# store loaded data
-			data_list.append(data)
-	return (data_list, filepaths)
+	# 	async with aiofiles.open(filepath, 'r') as handle:
+	# 		# load the contents and add to list
+	# 		data = await handle.read()
+	# 		# store loaded data
+	# 		data_list.append(data)
+	# return (data_list, filepaths)
+		text = filepath.read_text()
+		text = text.replace("wsdfgefrgh", "12312423423")
+		filepath.write_text(text)
+	return filepaths
 
 
 # load all files in a directory into memory
@@ -43,7 +46,7 @@ async def main(path='./'):
 	# execute tasks and process results as they are completed
 	for task in asyncio.as_completed(tasks):
 		# wait for the next task to complete
-		_, filepaths = await task
+		filepaths = await task
 		# process results
 		for filepath in filepaths:
 			# report progress
