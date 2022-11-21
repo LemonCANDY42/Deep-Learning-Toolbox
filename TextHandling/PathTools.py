@@ -23,5 +23,5 @@ def get_suffix_files(path:str|pathlib.Path,suffix='txt'):
 	return files_path
 
 if __name__ == '__main__':
-	files_path = get_suffix_files(path="/Users/kennymccormick/github/Deep-Learning-Toolbox",suffix="py")
+	files_path = get_suffix_files(path="/", suffix="py")
 	print(files_path)
