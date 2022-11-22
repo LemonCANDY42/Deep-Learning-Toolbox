@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/11/16 22:58
 # @Author  : Kenny Zhou
-# @FileName: PathTools.py
+# @FileName: pathTools.py
 # @Software: PyCharm
 # @Email    ：l.w.r.f.42@gmail.com
 

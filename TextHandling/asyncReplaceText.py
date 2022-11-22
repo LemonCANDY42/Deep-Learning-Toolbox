@@ -12,7 +12,7 @@
 # from os.path import join
 import asyncio
 # import aiofiles
-from TextHandling.PathTools import get_suffix_files
+from TextHandling.pathTools import get_suffix_files
 
 # load and return the contents of a list of file paths
 async def load_files(filepaths,need_replace_text,replace_text):
