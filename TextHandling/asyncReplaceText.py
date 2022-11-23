@@ -64,20 +64,27 @@ async def main(path='./',need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmai
 
 # entry point
 if __name__ == '__main__':
+
 	import time
 	from loguru import logger
 
-	logger.info("Start running!")
-	asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='AWSEDASDFAS',
-									 replace_text="123216311231234", suffix='txt'))
-	repetitions = 100
-	start_time = time.time()
-	for i in range(repetitions//2):
-		asyncio.run(main("/Users/kennymccormick/WorkFolder/test",need_replace_text='123216311231234',replace_text="l.w.r.f.42@gmail.com",suffix='txt'))
-		asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='l.w.r.f.42@gmail.com',
+	def cal_cost_time(repetitions=100):
+		logger.info("Start running!")
+		asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='AWSEDASDFAS',
 										 replace_text="123216311231234", suffix='txt'))
-	end_time = time.time()
-	cost_time = (end_time-start_time)/repetitions*1000
+		start_time = time.time()
+		for i in range(repetitions//2):
+			asyncio.run(main("/Users/kennymccormick/WorkFolder/test",need_replace_text='123216311231234',replace_text="l.w.r.f.42@gmail.com",suffix='txt'))
+			asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='l.w.r.f.42@gmail.com',
+											 replace_text="123216311231234", suffix='txt'))
+		end_time = time.time()
+		cost_time = (end_time-start_time)/repetitions*1000
+		asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='123216311231234',
+										 replace_text="AWSEDASDFAS", suffix='txt'))
+		logger.info("Cost time is {cost_time}ms.",cost_time=cost_time)
+
+	#cal_cost_time()
+
+	#Run.
 	asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='123216311231234',
 									 replace_text="AWSEDASDFAS", suffix='txt'))
-	logger.info("Cost time is {cost_time}ms.",cost_time=cost_time)
