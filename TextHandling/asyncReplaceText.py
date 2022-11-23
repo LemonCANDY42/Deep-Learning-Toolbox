@@ -70,7 +70,7 @@ if __name__ == '__main__':
 	logger.info("Start running!")
 	asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='AWSEDASDFAS',
 									 replace_text="123216311231234", suffix='txt'))
-	repetitions = 1000
+	repetitions = 100
 	start_time = time.time()
 	for i in range(repetitions//2):
 		asyncio.run(main("/Users/kennymccormick/WorkFolder/test",need_replace_text='123216311231234',replace_text="l.w.r.f.42@gmail.com",suffix='txt'))
