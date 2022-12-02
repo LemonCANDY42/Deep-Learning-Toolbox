@@ -19,7 +19,8 @@ SAVEROOT = r'C:\Users\lzg\Desktop\testout'  ###含有黑色烟雾的数据集的
 async def worker(pngpaths):
 	for pngname in pngpaths:
 		pngpath = os.path.join(IMGROOT, pngname)
-		maskgray = np.array(Image.open(pngpath)).astype(np.int32)
+		pngfile = await Image.open(pngpath)
+		maskgray = np.array(pngfile).astype(np.int32)
 		if maskgray.ndim != 2:
 			exit(f'{pngname} is not gray image')
 		imgpath = os.path.splitext(pngpath)[0] + '.jpg'
@@ -52,11 +53,15 @@ async def main():
 	# split the operations into chunks
 	tasks = list()
 
-	for i in trange(0, len(pnglist), chunksize):
+	for i in range(0, len(pnglist), chunksize):
 		# select a chunk of filenames
 		pngpaths = pnglist[i:(i + chunksize)]
 		# define the task
 		tasks.append(worker(pngpaths))
+
+	for task in tqdm(asyncio.as_completed(tasks),total=len(tasks)):
+		# wait for the next task to complete
+		filepaths = await task
 
 	del ids_class
 	ids_class = {0: 'background', 1: 'smoke_black', 2: 'smoke_white'}
