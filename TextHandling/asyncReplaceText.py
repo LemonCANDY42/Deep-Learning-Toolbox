@@ -6,7 +6,7 @@
 # @Email    ：l.w.r.f.42@gmail.com
 
 # Notice:This script will modify the file on the source file, please pay attention to the backup to avoid unnecessary damage!
-# Need todo: pip install loguru
+# Need todo: pip install loguru,aiofiles
 # aiofiles,atomicwrites
 # load many files concurrently with asyncio in batch
 # from os import listdir
@@ -16,7 +16,7 @@ import re
 import asyncio
 import aiofiles
 from TextHandling.pathTools import get_suffix_files
-from atomicwrites import atomic_write
+# from atomicwrites import atomic_write
 
 class MatchReplace:
 	__allowed = ("replace_dict",)
@@ -143,4 +143,5 @@ if __name__ == '__main__':
 
 	#Run.
 	asyncio.run(main("/Users/kennymccormick/WorkFolder/测试", need_replace_text='14325AWSEDA3543146514dfdsvdsv',
-									 replace_text="3543146514", suffix='xml',flag=True,start="<name>ocr</name>\n        <value>",end="</value>",replace_dict={"343":"TEST","-":"_","None":"___"}))
+									 replace_text="3543146514", suffix='xml',flag=True,start="<name>ocr</name>\n        <value>",end="</value>"
+									 ,replace_dict={"343":"TEST","-":"_","None":"___"}))
