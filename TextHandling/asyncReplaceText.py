@@ -61,21 +61,7 @@ async def load_files(filepaths,need_replace_text="",replace_text="",flag=False,s
 	"""
 	# load all files
 	for filepath in filepaths:
-		# # open the file
-		# async with aiofiles.open(filepath, 'r') as handle:
-		# 	# load the contents and add to list
-		# 	data = await handle.read()
-		# 	# store loaded data
-		# 	# data_list.append(data)
-		# async with aiofiles.open(filepath, 'w') as f:
-		# 	data = data.replace(need_replace_text, replace_text)
-		# 	print(data)
-		# 	f.write(data)
-	# return (data_list, filepaths)
 
-		# text = filepath.read_text()
-		# text = text.replace(need_replace_text, replace_text)
-		# filepath.write_text(text)
 		mr = MatchReplace(replace_dict=replace_dict)
 		async with aiofiles.open(filepath, 'r') as handle:
 			text = await handle.read()
@@ -83,7 +69,8 @@ async def load_files(filepaths,need_replace_text="",replace_text="",flag=False,s
 			if flag and replace_dict:
 				# print(re.findall(r"{0}(.+?){1}".format(start,end), text, re.S))
 				text = re.sub(r"(?P<start>{0})(?P<value>.+?)(?P<end>{1})".format(start,end), mr.match_replace, text, re.S)
-			filepath.write_text(text)
+
+		filepath.write_text(text)
 
 	return filepaths
 
@@ -103,12 +90,7 @@ async def main(path='./',need_replace_text='#$%^&',replace_text="l.w.r.f.42@gmai
 	# execute tasks and process results as they are completed
 	for task in asyncio.as_completed(tasks):
 		# wait for the next task to complete
-		filepaths = await task
-		# process results
-	# 	for filepath in filepaths:
-	# 		# report progress
-	# 		print(f'.loaded {filepath}')
-	# print('Done')
+		_ = await task
 
 
 # entry point
@@ -142,6 +124,6 @@ if __name__ == '__main__':
 	# cal_cost_time()
 
 	#Run.
-	asyncio.run(main("/Users/kennymccormick/WorkFolder/测试", need_replace_text='14325AWSEDA3543146514dfdsvdsv',
+	asyncio.run(main("/Users/kennymccormick/WorkFolder/test", need_replace_text='14325AWSEDA3543146514dfdsvdsv',
 									 replace_text="3543146514", suffix='xml',flag=True,start="<name>ocr</name>\n        <value>",end="</value>"
 									 ,replace_dict={"343":"TEST","-":"_","None":"___"}))
