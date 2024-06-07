@@ -208,4 +208,6 @@ def main():
         move_or_copy_files(filtered_files, args.destination, args.copy)
 
 if __name__ == "__main__":
+
+    # python SmartTools/folder_tools/file_filter.py  /Users/kennymccormick/Downloads/3 --destination /Users/kennymccormick/Downloads/new  --file-type images --filter-module image_filter --image_filter--min_width 301 --image_filter--min_height 301 --image_filter--channels 3
     main()
