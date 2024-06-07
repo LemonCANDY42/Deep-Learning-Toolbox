@@ -83,7 +83,7 @@ def visualLabel(path,suffix="png"):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="choose the folder")
-	parser.add_argument('-p', '--path', default="/Users/kennymccormick/Downloads/sample_o", type=str, help="输入路径")
+	parser.add_argument('-p', '--path', default="/Users/kennymccormick/Downloads/烟雾识别(明火与烟雾)正样本", type=str, help="输入路径")
 	args = parser.parse_args()
 
 	visualLabel(args.path)
