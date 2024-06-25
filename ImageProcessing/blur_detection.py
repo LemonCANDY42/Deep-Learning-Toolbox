@@ -129,7 +129,7 @@ def analyze_histogram(histogram, consistency_threshold=0.37,mean_consistency_thr
     print(f"Directionality: {directionality:.3f}, Max consistency: {max_consistency:.3f},mean_consistency:{mean_consistency:.3f},mean_consistency:{std_consistency}")
 
     # return directionality > threshold and max_consistency > consistency_threshold
-    return max_consistency>consistency_threshold or mean_consistency>mean_consistency_threshold
+    return max_consistency>consistency_threshold or std_consistency>mean_consistency_threshold
 
 
 # 主函数：处理图像并判断是否存在模糊和运动模糊
@@ -162,5 +162,5 @@ def main(image_path):
         print("Image is sharp")
 
 if __name__ == "__main__":
-    main("/Users/kennymccormick/Pictures/PhotosExprot/images.jpg")
+    main("/Users/kennymccormick/Pictures/PhotosExprot/WechatIMG36.jpg")
 
