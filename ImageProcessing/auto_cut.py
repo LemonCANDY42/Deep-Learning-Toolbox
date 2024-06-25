@@ -5,6 +5,11 @@
 # @Software: PyCharm
 # @Email    ：l.w.r.f.42@gmail.com
 
+"""
+给定一张本地图像和目标比例（如16:9），点击图像上的任意点，将其作为新图像中三分法九宫格线的一个交点（选择距离原图最近的模板点），并按该比例裁剪出最大图像。
+
+"""
+
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
