@@ -8,95 +8,123 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
-import sys
+from concurrent.futures import ThreadPoolExecutor
 
-def apply_canny(image, low_threshold, high_threshold):
-    """Apply Canny edge detection."""
-    return cv2.Canny(image, low_threshold, high_threshold)
+from SmartTools.measure import timeit
 
-def apply_sobel(image, ksize):
-    """Apply Sobel edge detection."""
-    sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=ksize)
-    sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=ksize)
-    sobel = cv2.convertScaleAbs(sobelx + sobely)
-    return sobel
+# 读取图像
+image = cv2.imread('/Users/kennymccormick/Pictures/PhotosExprot/IMG_2765.jpeg')
+original_height, original_width = image.shape[:2]
 
-def apply_laplacian(image, ksize):
-    """Apply Laplacian edge detection."""
-    laplacian = cv2.Laplacian(image, cv2.CV_64F, ksize=ksize)
-    laplacian = cv2.convertScaleAbs(laplacian)
-    return laplacian
+# 调整图像大小
+resize_height, resize_width = 600, 800
+resized_image = cv2.resize(image, (resize_width, resize_height))
+gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
 
-def update(val):
-    """Update the edge detection results based on slider values."""
-    low_threshold = canny_low_slider.val
-    high_threshold = canny_high_slider.val
-    sobel_ksize = int(sobel_slider.val)
-    laplacian_ksize = int(laplacian_slider.val)
+# 使用Canny边缘检测
+low_threshold = 100  # 提高低阈值
+high_threshold = 200  # 提高高阈值
+edges = cv2.Canny(gray, low_threshold, high_threshold)
 
-    canny_edges = apply_canny(gray_image, low_threshold, high_threshold)
-    sobel_edges = apply_sobel(gray_image, sobel_ksize)
-    laplacian_edges = apply_laplacian(gray_image, laplacian_ksize)
+# 使用形态学操作来连接断开的边缘并去除噪声
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))  # 更小的核
+dilated = cv2.dilate(edges, kernel, iterations=1)
 
-    ax_canny.imshow(canny_edges, cmap='gray')
-    ax_sobel.imshow(sobel_edges, cmap='gray')
-    ax_laplacian.imshow(laplacian_edges, cmap='gray')
+# 找到轮廓
+contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    fig.canvas.draw_idle()
+# 定义一个函数来计算轮廓的长度
+def contour_length(contour):
+    return cv2.arcLength(contour, True)
 
-# Read the image
-image_path = '/Users/kennymccormick/Pictures/PhotosExprot/IMG_2765.jpeg'  # Replace with your image path
-image = cv2.imread(image_path)
-if image is None:
-    print(f"Error: Unable to open image file {image_path}")
-    sys.exit()
+# 定义一个函数来过滤轮廓
+def filter_contour(contour):
+    area = cv2.contourArea(contour)
+    perimeter = cv2.arcLength(contour, True)
+    return area > 1000 and perimeter > 100
 
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# 并行过滤轮廓
+with ThreadPoolExecutor() as executor:
+    filtered_contours = list(executor.map(lambda c: c if filter_contour(c) else None, contours))
+    filtered_contours = [c for c in filtered_contours if c is not None]
 
-# Create the plot
-fig, ((ax_orig, ax_canny), (ax_sobel, ax_laplacian)) = plt.subplots(2, 2, figsize=(10, 10))
-plt.subplots_adjust(left=0.25, bottom=0.25)
+# 找到最长的轮廓
+longest_contour = max(filtered_contours, key=contour_length)
+print(longest_contour)
 
-# Display the original image
-ax_orig.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-ax_orig.set_title('Original')
-ax_orig.axis('off')
+# 创建一个空白图像来绘制最长的轮廓
+mask = np.zeros_like(gray)
+cv2.drawContours(mask, [longest_contour], -1, 255, thickness=cv2.FILLED)
 
-# Initial edge detection results
-canny_edges = apply_canny(gray_image, 50, 150)
-sobel_edges = apply_sobel(gray_image, 3)
-laplacian_edges = apply_laplacian(gray_image, 3)
+# 使用mask来提取主要边缘
+main_edges = cv2.bitwise_and(edges, edges, mask=mask)
 
-# Display initial edge detection results
-ax_canny.imshow(canny_edges, cmap='gray')
-ax_canny.set_title('Canny')
-ax_canny.axis('off')
+# 定义构图线模板（例如黄金分割线）
+height, width = main_edges.shape
+golden_ratio = 0.618
+line_position = int(width * golden_ratio)
 
-ax_sobel.imshow(sobel_edges, cmap='gray')
-ax_sobel.set_title('Sobel')
-ax_sobel.axis('off')
+# 找到最长轮廓的起点和终点
+rect = cv2.minAreaRect(longest_contour)
+box = cv2.boxPoints(rect)
+box = np.int0(box)
 
-ax_laplacian.imshow(laplacian_edges, cmap='gray')
-ax_laplacian.set_title('Laplacian')
-ax_laplacian.axis('off')
+# 计算轮廓线的角度
+angle = rect[2]
 
-# Create sliders
-axcolor = 'lightgoldenrodyellow'
-ax_canny_low = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
-ax_canny_high = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
-ax_sobel = plt.axes([0.25, 0.05, 0.65, 0.03], facecolor=axcolor)
-ax_laplacian = plt.axes([0.25, 0.0, 0.65, 0.03], facecolor=axcolor)
+# 旋转图像，使最长轮廓线与模板线对齐
+center = (width // 2, height // 2)
+rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+rotated_image = cv2.warpAffine(resized_image, rotation_matrix, (width, height))
 
-canny_low_slider = Slider(ax_canny_low, 'Canny Low', 0, 255, valinit=50, valstep=1)
-canny_high_slider = Slider(ax_canny_high, 'Canny High', 0, 255, valinit=150, valstep=1)
-sobel_slider = Slider(ax_sobel, 'Sobel ksize', 1, 31, valinit=3, valstep=2)
-laplacian_slider = Slider(ax_laplacian, 'Laplacian ksize', 1, 31, valinit=3, valstep=2)
+# 计算最长轮廓线在旋转后的图像中的新位置
+longest_contour_2d = np.squeeze(longest_contour)
+rotated_contour = cv2.transform(np.array([longest_contour_2d]), rotation_matrix)[0]
 
-# Update the edge detection results when the slider values change
-canny_low_slider.on_changed(update)
-canny_high_slider.on_changed(update)
-sobel_slider.on_changed(update)
-laplacian_slider.on_changed(update)
+# 找到旋转后最长轮廓线的边界框
+x, y, w, h = cv2.boundingRect(rotated_contour)
 
+# 计算裁剪区域，使最长轮廓线对齐到模板线的位置
+new_x = max(0, x - line_position + w // 2)
+new_y = max(0, y)
+new_w = min(width - new_x, w)
+new_h = min(height - new_y, h)
+
+# 计算相对于原图的裁剪区域
+scale_x = original_width / resize_width
+scale_y = original_height / resize_height
+orig_x = int(new_x * scale_x)
+orig_y = int(new_y * scale_y)
+orig_w = int(new_w * scale_x)
+orig_h = int(new_h * scale_y)
+
+# 在原图上绘制准备裁剪的区域
+original_with_box = image.copy()
+cv2.rectangle(original_with_box, (orig_x, orig_y), (orig_x + orig_w, orig_y + orig_h), (0, 255, 0), 2)
+
+# 在原图上绘制预定义模板线
+line_x = int(orig_x + (line_position - new_x) * scale_x)
+cv2.line(original_with_box, (line_x, orig_y), (line_x, orig_y + orig_h), (255, 0, 0), 2)
+
+# 在原图上绘制最长轮廓线
+scaled_longest_contour = np.int0(longest_contour * [scale_x, scale_y])
+cv2.drawContours(original_with_box, [scaled_longest_contour], -1, (0, 0, 255), 2)
+
+# 裁剪原图
+cropped_original_image = image[orig_y:orig_y+orig_h, orig_x:orig_x+orig_w]
+
+# 在裁剪后的图像上绘制预定义模板线
+cv2.line(cropped_original_image, (line_x - orig_x, 0), (line_x - orig_x, orig_h), (0, 255, 0), 2)
+
+# 显示结果
+plt.figure(figsize=(15, 5))
+plt.subplot(1, 3, 1)
+plt.imshow(cv2.cvtColor(original_with_box, cv2.COLOR_BGR2RGB))
+plt.title('Original Image with Box')
+plt.subplot(1, 3, 2)
+plt.imshow(edges, cmap='gray')
+plt.title('Edges')
+plt.subplot(1, 3, 3)
+plt.imshow(cv2.cvtColor(cropped_original_image, cv2.COLOR_BGR2RGB))
+plt.title('Cropped Image with Template Line')
 plt.show()

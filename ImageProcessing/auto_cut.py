@@ -44,12 +44,13 @@ def onclick(event, img):
     click_point = (event.xdata, event.ydata)
     if click_point[0] is not None and click_point[1] is not None:
         print(f"Clicked at: {click_point}")
-        process_click(click_point, img)
+        process_click(click_point, img,R)
 
 
 # 处理点击事件，计算并切出新图
-def process_click(click, img):
+def process_click(click, img,R=R):
     img_width, img_height = img.size
+
     click_x, click_y = click
     click_x_norm = click_x / img_width
     click_y_norm = click_y / img_height
@@ -77,12 +78,19 @@ def process_click(click, img):
 
     print(f"click_x:{click_x},click_y:{click_y},w_max:{w_max},h_max:{h_max}")
 
-    h_new,w_new = 0,0
-
     w_max_R = h_max * R[0] / R[1] # 新图的最高的大小
     h_max_R = w_max * R[1] / R[0] # 新图的最宽的大小
 
     if img_width < w_max_R and img_height < h_max_R:
+        if img_width < w_max or img_height < h_max:
+            print("Error: Invalid crop Size.Try other Ratio")
+            if R != [9, 16] :
+                R = [9, 16]
+            else:
+                return
+            process_click(click, img,R)
+
+
         w_new = w_max
         h_new = h_max
         print(1)
@@ -134,16 +142,6 @@ def process_click(click, img):
     N_y = click_y - h_new * target_y
 
     print("N_y",N_y)
-
-    # 修正坐标，使其在图像范围内
-    # if N_x < 0:
-    #     N_x = 0
-    # if N_y < 0:
-    #     N_y = 0
-    # if (N_x + w_new) > img_width:
-    #     N_x = img_width - w_new
-    # if (N_y + h_new) > img_height:
-    #     N_y = img_height - h_new
 
     left = N_x
     upper = N_y
